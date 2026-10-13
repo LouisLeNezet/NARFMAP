@@ -1138,11 +1138,30 @@ char* generateHashTable(hashTableConfig_t* config, int argc, char* argv[])
   }
 
   struct stat s;
-  int         ret      = stat(config->refInput, &s);
-  int64_t     inputLen = ret < 0 ? -1 : s.st_size;
-  if (!(inpRefFile = fopen(config->refInput, "r"))) {
-    snprintf(ERR_MSG, sizeof(ERR_MSG), "Cannot open reference input file %s\n", config->refInput);
-    return ERR_MSG;
+  int ret = stat(config->refInput, &s);
+  int64_t inputLen = ret < 0 ? -1 : s.st_size;
+
+  gzFile inpRefGzFile = NULL;
+
+  size_t refInputLen = strlen(config->refInput);
+  if (refInputLen >= 3 &&
+      strcmp(config->refInput + refInputLen - 3, ".gz") == 0) {
+    inpRefGzFile = gzopen(config->refInput, "rb");
+    if (!inpRefGzFile) {
+      snprintf(ERR_MSG, sizeof(ERR_MSG),
+              "Cannot open compressed reference input file %s\n",
+              config->refInput);
+      return ERR_MSG;
+    }
+    inpRefFile = NULL;
+  } else {
+    inpRefFile = fopen(config->refInput, "r");
+    if (!inpRefFile) {
+      snprintf(ERR_MSG, sizeof(ERR_MSG),
+              "Cannot open reference input file %s\n",
+              config->refInput);
+      return ERR_MSG;
+    }
   }
 
 #ifndef LOCAL_BUILD
