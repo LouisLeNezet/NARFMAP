@@ -1172,8 +1172,6 @@ char* generateHashTable(hashTableConfig_t* config, int argc, char* argv[])
   ReferenceNamesInit();
 #endif
 
-  gzFile inpRefGzFile = NULL;
-
   // Read input FASTA (reference, decoy, pop alt contig) into sequence records
   printf("\nReading reference input file %s", config->refInput);
   if (inputLen >= 0) printf(": %lld bytes", inputLen);
