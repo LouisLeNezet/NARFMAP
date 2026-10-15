@@ -1206,9 +1206,22 @@ char* generateHashTable(hashTableConfig_t* config, int argc, char* argv[])
     if (!ret) {
       if (inpRefFile) {
         fclose(inpRefFile);
+        inpRefFile = NULL;
       }
       if (inpRefGzFile) {
-        gzclose(inpRefGzFile);
+        int readError = Z_OK;
+        const char* readMessage = gzerror(inpRefGzFile, &readError);
+        if (readError != Z_OK) {
+          snprintf(ERR_MSG, sizeof(ERR_MSG), "Cannot read compressed reference input: %s\n", readMessage);
+        }
+        int closeError = gzclose(inpRefGzFile);
+        inpRefGzFile = NULL;
+        if (readError != Z_OK) return ERR_MSG;
+        if (closeError != Z_OK) {
+          snprintf(
+              ERR_MSG, sizeof(ERR_MSG), "Cannot close compressed reference input: %s\n", zError(closeError));
+          return ERR_MSG;
+        }
       }
 #if 0
       printf(
