@@ -43,6 +43,8 @@
           };
         };
 
+        packages.default = config.packages.dragmap;
+
         packages.dragmap = pkgs.stdenv.mkDerivation {
           pname = "NARFMAP";
           version = "1.4.2";
