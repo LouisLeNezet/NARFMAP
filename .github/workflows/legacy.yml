@@ -16,9 +16,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
-      - name: Install dependancies
-        run: sudo apt-get install -y libboost-all-dev libgtest-dev
+      - uses: actions/checkout@v5
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libboost-all-dev libgtest-dev zlib1g-dev
       - name: make (compile and launch unit tests)
         run: make -j 2
         env:
@@ -26,11 +28,11 @@ jobs:
           STATIC: 1
       - name: make install
         run: sudo make install
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: compare
           path: ./build/release/compare
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: dragen-os
           path: ./build/release/dragen-os
